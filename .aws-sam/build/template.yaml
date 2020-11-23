@@ -1,0 +1,9 @@
+Resources:
+  Function:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lambda.ProfileDetails
+      CodeUri: Function
+      Runtime: java8
+      Timeout: 300
+      MemorySize: 2240
