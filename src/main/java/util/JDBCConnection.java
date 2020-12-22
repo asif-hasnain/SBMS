@@ -22,7 +22,7 @@ public class JDBCConnection {
 //		   	DBCredMapper cred = new Gson().fromJson(secret,DBCredMapper.class);
 //			   con = DriverManager.getConnection(
 //					   "jdbc:" + cred.getEngine()+"://"+cred.getHost()+"/"+cred.getDbInstanceIdentifier(), cred.getUsername(), cred.getPassword());
-			   con = DriverManager.getConnection("jdbc:mysql://ec2-18-221-128-31.us-east-2.compute.amazonaws.com:3306/sbm","lambda","Asif@54321");
+			   con = DriverManager.getConnection("jdbc:mysql://ec2-18-221-128-31.us-east-2.compute.amazonaws.com:3306/sbm","lambda","*********");
 		   } catch (SQLException e) {
 				System.out.println("Error while creating new JDBC Connection");
 				e.printStackTrace();
