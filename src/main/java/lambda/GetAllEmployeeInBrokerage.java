@@ -19,7 +19,7 @@ public class GetAllEmployeeInBrokerage implements RequestHandler<GetAllEmployeeI
         }
         con = JDBCConnection.getJDBCCOnnection(con, 0);
         List<EmployeeData> employeeList = DBUtil.getAllEmployeeInBrokerage(input.getBrokerageId(),con);
-        if(employeeList != null && employeeList.size()>0){
+        if(employeeList != null){
             return new GetAllEmployeeInBrokerageResponse(new Response(Constant.SUCCESS,Constant.SUCCESS_MSG),
                     employeeList);
         }

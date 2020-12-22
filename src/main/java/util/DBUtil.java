@@ -2,7 +2,6 @@ package util;
 
 import mapper.DBMapper.*;
 import mapper.IEXData;
-import org.acegisecurity.Authentication;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -18,7 +17,7 @@ public class DBUtil {
 	public static String GET_USER_BY_USER_ID = "get_user_details(?)";
 	public static String GET_USER_BY_EMAIL_ID = "get_user_by_email_id(?)";
 	public static String GET_ADDRESS_BY_USER_ID = "get_address_by_userid(?)";
-	public static String ADD_NEW_USER = "add_new_user(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public static String ADD_NEW_USER = "add_new_user(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	public static String ADD_STOCK_DATA = "add_stock_data(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 	public static String GET_SUBSCRIPTION_LIST = "get_subscription_list(?)";
 	public static String GET_STOCK_DATA = "get_stock_data(?)";
@@ -34,15 +33,20 @@ public class DBUtil {
 	public static String ADD_INTRADAY_SQUAREOFF_ORDER = "add_intraday_squareoff_order(?,?,?,?,?,?)";
 	public static String GET_CUSTOMER_BY_USER_ID = "get_customer_by_user_id(?)";
 	public static String GET_EMPLOYEE_BY_USER_ID = "get_employee_by_user_id(?)";
+	public static String GET_USER_BY_EMPLOYEE_ID = "get_user_by_employee_id(?)";
 	public static String GET_ALL_CUSTOMER_IN_BROKERAGE = "get_all_customer_in_brokerage(?)";
 	public static String GET_ALL_EMPLOYEE_IN_BROKERAGE = "get_all_employee_in_brokerage(?)";
 	public static String GET_BROKERAGE_DATA = "get_brokerage_data(?)";
 	public static String ADD_OTP = "add_otp(?,?)";
 	public static String GET_OTP = "get_otp(?)";
 	public static String UPDATE_PASSWORD = "update_password(?,?)";
-
+	public static String GET_INVOICE_LIST = "get_invoice_list(?)";
+	public static String GET_INVOICE = "get_invoice(?)";
+	public static String PAY_INVOICE = "pay_invoice(?,?,?,?)";
 	public static String ADD_AUTHENTICATION_DETAILS = "add_authentication_details(?,?)";
 	public static String GET_ATUTHENTICATION_DETAILS = "get_authentication_details(?)";
+	public static String ADD_EMAIL_LOG = "add_email_log(?,?,?,?)";
+
 	public static String GET_INSURANCE_DETAILS_BY_USER_ID = "get_insurance_details(?)";
 	public static String ADD_INSURANCE = "add_insurance(?,?,?,?,?,?,?,?)";
 	public static String ADD_HOME = "add_home(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -50,7 +54,7 @@ public class DBUtil {
 	public static String ADD_DRIVER = "add_driver(?,?,?,?,?)";
 	public static String GET_INVOICE_DETAILS = "get_invoice_detail(?)";
 	public static String UPDATE_PAYMENT = "update_payment(?,?,?,?,?)";
-	public static String GET_ACCESS_DETAILS = "get_access_details(?,?)";
+	public static String VERIFY_ACCESS = "verify_access(?,?)";
 	public static String GET_RESTRICTED_FEATURE = "get_restricted_feature(?)";
 	public static String PROVIDE_ACCESS = "provide_access(?,?)";
 	public static String DELETE_RECORD = "delete_record(?,?,?,?,?)";
@@ -167,6 +171,28 @@ public class DBUtil {
 			return null;
 		}
 	}
+
+	public static User getUserByEmployeeId(int employee_id, Connection con) {
+		try {
+			String query = "{call " + GET_USER_BY_EMPLOYEE_ID + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+			System.out.println(statement.toString());
+			statement.setInt(1, employee_id);
+			System.out.println(statement.toString());
+			statement.execute();
+			ResultSet resultSet = statement.getResultSet();
+			List<User> employeeList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, User.class);
+			statement.close();
+			if (employeeList != null && employeeList.size() == 1) {
+				return employeeList.get(0);
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 	public static Employee getEmployeeByUserId(String userId, Connection con) {
 		try {
 			String query = "{call " + GET_EMPLOYEE_BY_USER_ID + "}";
@@ -210,6 +236,73 @@ public class DBUtil {
 			return null;
 		}
 	}
+	public static List<Invoice> getInvoiceList(String brokerageId, Connection con) {
+		try {
+			String query = "{call " + GET_INVOICE_LIST + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+			System.out.println(statement.toString());
+			statement.setString(1, brokerageId);
+			System.out.println(statement.toString());
+			statement.execute();
+			ResultSet resultSet = statement.getResultSet();
+			List<Invoice> invoiceList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, Invoice.class);
+			statement.close();
+			System.out.println(invoiceList);
+			if (invoiceList != null) {
+				return invoiceList;
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public static List<Invoice> getInvoice(String invoiceId, Connection con) {
+		try {
+			String query = "{call " + GET_INVOICE + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+			System.out.println(statement.toString());
+			statement.setString(1, invoiceId);
+			System.out.println(statement.toString());
+			statement.execute();
+			ResultSet resultSet = statement.getResultSet();
+			List<Invoice> invoiceList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, Invoice.class);
+			statement.close();
+			System.out.println(invoiceList);
+			if (invoiceList != null) {
+				return invoiceList;
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public static boolean payInvoice(String invoiceId,String paymentMethod, double amount, Connection con) {
+		try {
+			String query = "{call " + PAY_INVOICE + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+			statement.setString(1, invoiceId);
+			statement.setString(2, UUID.randomUUID().toString());
+			statement.setString(3, paymentMethod);
+			statement.setDouble(4, amount);
+			System.out.println(statement.toString());
+			boolean statementResultType = statement.execute();
+			System.out.println("statementResultType1 :" + statementResultType + "  " + statement.getUpdateCount());
+			if (!statementResultType) {
+				statement.close();
+				return true;
+			}
+			return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
 	public static List<EmployeeData> getAllEmployeeInBrokerage(String brokerageId, Connection con) {
 		try {
 			String query = "{call " + GET_ALL_EMPLOYEE_IN_BROKERAGE + "}";
@@ -598,29 +691,29 @@ public class DBUtil {
 //		}
 //	}
 
-//	public static boolean getAccessByUserId(int userId, String api, Connection con) {
-//		try {
-//			String query = "{call " + GET_ACCESS_DETAILS + "}";
-//			System.out.println("Query: " + query);
-//			CallableStatement statement = con.prepareCall(query);
-//			System.out.println(statement.toString());
-//			statement.setInt(1, userId);
-//			statement.setString(2, api);
-//			System.out.println(statement.toString());
-//			statement.execute();
-//			ResultSet resultSet = statement.getResultSet();
-//			List<UserFeature> userFeatureList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, UserFeature.class);
-//			System.out.println("userFeatureList : "+userFeatureList);
-//			statement.close();
-//			if (userFeatureList != null && userFeatureList.size() == 1) {
-//				return true;
-//			}
-//			return false;
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
-//	}
+	public static boolean verifyAccess(String userId, String api, Connection con) {
+		try {
+			String query = "{call " + VERIFY_ACCESS + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+			System.out.println(statement.toString());
+			statement.setString(1, userId);
+			statement.setString(2, api);
+			System.out.println(statement.toString());
+			statement.execute();
+			ResultSet resultSet = statement.getResultSet();
+			List<Access> accessList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, Access.class);
+			System.out.println("accessList : "+accessList);
+			statement.close();
+			if (accessList != null) {
+				return true;
+			}
+			return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	
 //	public static Feature getRestrictedFeature(String api, Connection con) {
 //		try {
@@ -804,6 +897,28 @@ public class DBUtil {
 			return false;
 		}
 	}
+	public static boolean addEmailLog(String email_to,String subject, String body, String user_id, Connection con) {
+		try {
+			String query = "{call " + ADD_EMAIL_LOG + "}";
+			System.out.println("Query: " + query);
+			CallableStatement statement = con.prepareCall(query);
+				statement.setString(1, email_to);
+				statement.setString(2, subject);
+				statement.setString(3, body);
+				statement.setString(4, user_id);
+			System.out.println(statement.toString());
+			boolean statementResultType = statement.execute();
+			System.out.println("statementResultType1 :" + statementResultType + "  " + statement.getUpdateCount());
+			if (!statementResultType && statement.getUpdateCount() == 1) {
+				statement.close();
+				return true;
+			}
+			return false;
+		}catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 	public static boolean subscribe(String userId,String symbol, Connection con){
 		try {
 			String query = "{call " + SUBSCRIBE + "}";
@@ -853,6 +968,7 @@ public class DBUtil {
 			ResultSet resultSet = statement.getResultSet();
 			List<StockData> subscriptionList = ResultSetObjectMapper.mapRersultSetToObject(resultSet, StockData.class);
 			statement.close();
+			System.out.println(subscriptionList);
 			if (subscriptionList != null && subscriptionList.size() > 0) {
 				return subscriptionList;
 			}
@@ -1000,8 +1116,8 @@ public class DBUtil {
 			System.out.println(statement.toString());
 			boolean statementResultType = statement.execute();
 			System.out.println("statementResultType1 :" + statementResultType + "  " + statement.getUpdateCount());
+			statement.close();
 			if (!statementResultType) {
-				statement.close();
 				return true;
 			}
 			return false;

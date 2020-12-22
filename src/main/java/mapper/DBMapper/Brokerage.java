@@ -21,6 +21,10 @@ public class Brokerage {
     private String membership_id;
     @Column(name="membership_type")
     private String membership_type;
+    @Column(name="trading_fee")
+    private double trading_fee;
+    @Column(name="service_charge")
+    private double service_charge;
 
     public String getBrokerageId() {
         return brokerageId;
@@ -86,6 +90,22 @@ public class Brokerage {
         this.membership_type = membership_type;
     }
 
+    public double getTrading_fee() {
+        return trading_fee;
+    }
+
+    public void setTrading_fee(double trading_fee) {
+        this.trading_fee = trading_fee;
+    }
+
+    public double getService_charge() {
+        return service_charge;
+    }
+
+    public void setService_charge(double service_charge) {
+        this.service_charge = service_charge;
+    }
+
     @Override
     public String toString() {
         return "Brokerage{" +
@@ -97,6 +117,8 @@ public class Brokerage {
                 ", zipcode=" + zipcode +
                 ", membership_id='" + membership_id + '\'' +
                 ", membership_type='" + membership_type + '\'' +
+                ", trading_fee=" + trading_fee +
+                ", service_charge=" + service_charge +
                 '}';
     }
 }

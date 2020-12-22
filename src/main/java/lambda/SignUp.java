@@ -29,6 +29,7 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 				|| !(CommonUtil.isValidString(input.getGender())
 						&& (input.getGender().equalsIgnoreCase("F") || input.getGender().equalsIgnoreCase("M")))
 				|| !CommonUtil.isValidName(input.getFirstName()) || !CommonUtil.isValidName(input.getLastName())
+				|| input.getDob() == null
 				|| !CommonUtil.isValidString(input.getSt_address_primary()) || !CommonUtil.isValidString(input.getCity_primary())
 				|| !CommonUtil.isValidString(input.getState_primary()) || input.getState_primary().length() != 2
 				|| input.getZipcode_primary()<10000
@@ -36,7 +37,7 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 				|| !CommonUtil.isValidString(input.getState_secondary()) || input.getState_secondary().length() != 2
 				|| input.getZipcode_secondary()<10000
 				|| !CommonUtil.isValidString(input.getUser_type()) || !(input.getUser_type().equalsIgnoreCase("C")
-				|| !(input.getUser_type().equalsIgnoreCase("A")|| input.getUser_type().equalsIgnoreCase("E"))
+				|| (input.getUser_type().equalsIgnoreCase("A")|| input.getUser_type().equalsIgnoreCase("E"))
 				||(input.getUser_type().equalsIgnoreCase("E") && 
 						(!CommonUtil.isValidString(input.getEmp_department()) || !CommonUtil.isValidString(input.getDesignation())))
 				||(input.getUser_type().equalsIgnoreCase("A") &&
@@ -61,6 +62,19 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 				 return new LoginResponse(new Response(Constant.EMAIL_ADDRESS_ALREADY_EXIST, Constant.EMAIL_ADDRESS_ALREADY_EXIST_MSG));
 			 } 
 			 statement.close();
+			 if(input.getSuperviser_id() > 0) {
+				 User manager = DBUtil.getUserByEmployeeId(input.getSuperviser_id(), con);
+				 if(manager == null || !CommonUtil.isValidString(manager.getBrokerage_id()) ||
+						 !manager.getBrokerage_id().equalsIgnoreCase(input.getBrokerage_id())){
+					 return new LoginResponse(new Response(Constant.DEFAULT_ERROR, "Employee not created! Invalid Supervisor Id."));
+				 }
+			 } else if(input.getUser_type().equalsIgnoreCase("C") && input.getRelationship_manager() > 0) {
+				 User manager = DBUtil.getUserByEmployeeId(input.getRelationship_manager(), con);
+				 if(manager == null || !CommonUtil.isValidString(manager.getBrokerage_id()) ||
+						 !manager.getBrokerage_id().equalsIgnoreCase(input.getBrokerage_id())){
+					 return new LoginResponse(new Response(Constant.DEFAULT_ERROR, "Customer not created! Invalid Relationship Manager Id"));
+				 }
+			 }
 			 String userId = UUID.randomUUID().toString();
 			 String authKey = UUID.randomUUID().toString();
 			 CallableStatement statement1 = createStatement(con,input,userId,authKey);
@@ -68,6 +82,7 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 
 			 boolean statementResultType1 = statement1.execute();
 			 System.out.println("statementResultType1 :" + statementResultType1 + "  "+ statement1.getUpdateCount());
+			 int updateCount = statement1.getUpdateCount();
 			 statement1.close();
 			 if(!statementResultType1) {
 			 	CommonUtil.verifyEmailInSES(input.getEmailId());
@@ -118,19 +133,13 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 			statement.setString(10, null);
 			statement.setString(11, null);
 		}
-		if(CommonUtil.isValidString(input.getRelationship_manager())){
-			statement.setString(12, input.getRelationship_manager());
-		} else {
-			statement.setString(12, null);
-		}
+		statement.setInt(12, input.getRelationship_manager());
 		if(input.getUser_type().equalsIgnoreCase("E")){
 			statement.setString(13, input.getDesignation().toUpperCase());
 		} else statement.setString(13, null);
 		statement.setDouble(14, input.getSalary());
 		statement.setDouble(15, input.getCommision());
-		if(CommonUtil.isValidString(input.getSuperviser_id())){
-			statement.setString(16, input.getSuperviser_id());
-		} else statement.setString(16, null);
+		statement.setInt(16, input.getSuperviser_id());
 		statement.setString(17,UUID.randomUUID().toString());
 		statement.setString(18,input.getSt_address_primary().toUpperCase());
 		statement.setString(19,input.getCity_primary().toUpperCase());
@@ -141,7 +150,8 @@ public class SignUp implements RequestHandler<SignUpRequest, LoginResponse> {
 		statement.setString(24,input.getCity_secondary().toUpperCase());
 		statement.setString(25,input.getState_secondary().toUpperCase());
 		statement.setInt(26,input.getZipcode_secondary());
-		statement.setString(27,authKey);
+		statement.setString(27,input.getBank_id());
+		statement.setDouble(28,input.getBank_account_number());
 		return statement;
 	}
 }

@@ -2,9 +2,8 @@ package lambda;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import mapper.DBMapper.*;
 import mapper.DBMapper.OrderHistory;
-import mapper.DBMapper.StockData;
-import mapper.DBMapper.TransactionHistory;
 import mapper.OrderRequest;
 import mapper.OrderResponse;
 import org.apache.commons.lang.time.DateUtils;
@@ -14,7 +13,6 @@ import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -46,6 +44,16 @@ public class Order implements RequestHandler<OrderRequest,OrderResponse> {
             System.out.println("margin: " + margin);
             double totalCost = input.getTradeType().equalsIgnoreCase(OrderHistory.tradeType.INTRADAY.name()) ?
                     stockData.getLatestPrice()*input.getQuantity() * 0.1 : stockData.getLatestPrice()*input.getQuantity();
+            User user = DBUtil.getUserByUserId(input.getUserId(), con);
+            if(user == null) {
+                return new OrderResponse(new Response(Constant.INVALID_INPUT, Constant.INVALID_INPUT_MSG));
+            }
+            Brokerage brokerage = DBUtil.getBrokerageData(user.getBrokerage_id(),con);
+            System.out.println("Brokerage : " + brokerage);
+            if(brokerage == null){
+                return new OrderResponse(new Response(Constant.DEFAULT_ERROR,Constant.DEFAULT_ERROR_MSG));
+            }
+            totalCost += (input.getQuantity() * brokerage.getTrading_fee());
             if(totalCost<=margin){
                 String orderId = UUID.randomUUID().toString();
                 boolean orderResult = DBUtil.addOrder(new OrderHistory(input.getUserId(),orderId,OrderHistory.orderType.BUY.name(),input.getTradeType().toUpperCase(),input.getSymbol(),input.getQuantity(),stockData.getLatestPrice(),OrderHistory.orderStatus.COMPLETE.toString()),con);

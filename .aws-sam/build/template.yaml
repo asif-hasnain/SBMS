@@ -2,8 +2,8 @@ Resources:
   Function:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: lambda.ProfileDetails
+      Handler: util.APIGatewayAuthorizer
       CodeUri: Function
       Runtime: java8
       Timeout: 300
-      MemorySize: 2240
+      MemorySize: 128

@@ -42,10 +42,11 @@ public class EmailOTP implements RequestHandler<EmailOTPRequest, Response> {
 
             try {
                 CommonUtil.sendEmail(input.getEmailId(),emailBody,subject);
+                DBUtil.addEmailLog(input.getEmailId(),subject,emailBody,user.getUserId(),con);
                 return new Response(Constant.SUCCESS,Constant.SUCCESS_MSG);
             } catch (Exception e) {
                 e.printStackTrace();
-                return new Response(Constant.DEFAULT_ERROR, "Not able to send email to this address. Please verify email address or contact customer service.");
+                return new Response(Constant.DEFAULT_ERROR, "Email address not verified. Verification link is sent during signup from no-reply-aws@amazon.com");
             }
         }
         return new Response(Constant.DEFAULT_ERROR, Constant.DEFAULT_ERROR_MSG);

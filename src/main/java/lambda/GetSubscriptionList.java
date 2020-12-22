@@ -24,10 +24,10 @@ public class GetSubscriptionList implements RequestHandler<GetSubscriptionReques
         try {
             List<StockData> subscriptionList = DBUtil.getSubscriptionList(input.getUserId(),con);
             List<StockData> stockList = new ArrayList<>(subscriptionList);
-            subscriptionList.removeIf(s -> !s.isSubscribed());
             if(subscriptionList==null || subscriptionList.size()==0){
                 return new GetSubscriptionResponse(new Response(Constant.DATA_NOT_AVAILABLE, Constant.DATA_NOT_AVAILABE_MSG));
             }
+            subscriptionList.removeIf(s -> !s.isSubscribed());
             double margin = Math.round(Order.getMargin(input.getUserId(),con)*100)/100;
             double credit = Math.round(Order.getAvailableCredit(input.getUserId(),con)*100)/100;
             return new GetSubscriptionResponse(new Response(Constant.SUCCESS,Constant.SUCCESS_MSG),subscriptionList,stockList,Math.abs(margin),credit+margin);

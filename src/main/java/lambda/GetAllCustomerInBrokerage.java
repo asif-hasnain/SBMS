@@ -21,7 +21,7 @@ public class GetAllCustomerInBrokerage implements RequestHandler<GetAllCustomerI
         }
         con = JDBCConnection.getJDBCCOnnection(con, 0);
         List<CustomerData> customerList = DBUtil.getAllCustomerInBrokerage(input.getBrokerageId(),con);
-        if(customerList != null && customerList.size()>0){
+        if(customerList != null){
             return new GetAllCustomerInBrokerageResponse(new Response(Constant.SUCCESS,Constant.SUCCESS_MSG),
                     customerList);
         }

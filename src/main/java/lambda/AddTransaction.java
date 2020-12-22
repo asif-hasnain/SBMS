@@ -22,6 +22,15 @@ public class AddTransaction implements RequestHandler<AddTransactionRequest, Add
             return new AddTransactionResponse(new Response(Constant.INVALID_INPUT, Constant.INVALID_INPUT_MSG));
         }
         con = JDBCConnection.getJDBCCOnnection(con, 0);
+        if(input.getTransactionType().equalsIgnoreCase(TransactionHistory.transactionType.DEBIT.name())) {
+            double creditAvailable = Order.getAvailableCredit(input.getUserId(),con);
+            System.out.println("creditAvailable: " + creditAvailable);
+            double margin = creditAvailable + Order.getMargin(input.getUserId(),con);
+            System.out.println("margin: " + margin);
+            if (margin < input.getAmount()){
+                return new AddTransactionResponse(new Response(Constant.DEFAULT_ERROR, "No enough margin available. Only $" + String.format("%.2f", margin) + " can be debited"));
+            }
+        }
         String transactionId = UUID.randomUUID().toString();
         boolean transactionResult = DBUtil.addTransaction(transactionId, input.getUserId(), input.getTransactionType().toUpperCase(), input.getAmount(), con);
         if (transactionResult) {

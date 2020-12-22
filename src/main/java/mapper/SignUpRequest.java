@@ -21,12 +21,14 @@ public class SignUpRequest {
 	private String designation;
 	private String emp_department;
 	private String membership_type;
-	private String relationship_manager;
-	private String superviser_id;
+	private int relationship_manager;
+	private int superviser_id;
 	private String brokerage_id;
 	private String brokerage_name;
 	private double salary;
 	private double commision;
+	private String bank_id;
+	private long bank_account_number;
 
 	public String getEmailId() {
 		return emailId;
@@ -164,11 +166,11 @@ public class SignUpRequest {
 		this.membership_type = membership_type;
 	}
 
-	public String getRelationship_manager() {
+	public int getRelationship_manager() {
 		return relationship_manager;
 	}
 
-	public void setRelationship_manager(String relationship_manager) {
+	public void setRelationship_manager(int relationship_manager) {
 		this.relationship_manager = relationship_manager;
 	}
 
@@ -180,11 +182,11 @@ public class SignUpRequest {
 		this.dob = dob;
 	}
 
-	public String getSuperviser_id() {
+	public int getSuperviser_id() {
 		return superviser_id;
 	}
 
-	public void setSuperviser_id(String superviser_id) {
+	public void setSuperviser_id(int superviser_id) {
 		this.superviser_id = superviser_id;
 	}
 
@@ -220,6 +222,22 @@ public class SignUpRequest {
 		this.commision = commision;
 	}
 
+	public String getBank_id() {
+		return bank_id;
+	}
+
+	public void setBank_id(String bank_id) {
+		this.bank_id = bank_id;
+	}
+
+	public long getBank_account_number() {
+		return bank_account_number;
+	}
+
+	public void setBank_account_number(long bank_account_number) {
+		this.bank_account_number = bank_account_number;
+	}
+
 	@Override
 	public String toString() {
 		return "SignUpRequest{" +
@@ -232,19 +250,23 @@ public class SignUpRequest {
 				", st_address_primary='" + st_address_primary + '\'' +
 				", city_primary='" + city_primary + '\'' +
 				", state_primary='" + state_primary + '\'' +
-				", zipcode_primary='" + zipcode_primary + '\'' +
+				", zipcode_primary=" + zipcode_primary +
 				", st_address_secondary='" + st_address_secondary + '\'' +
 				", city_secondary='" + city_secondary + '\'' +
 				", state_secondary='" + state_secondary + '\'' +
-				", zipcode_secondary='" + zipcode_secondary + '\'' +
+				", zipcode_secondary=" + zipcode_secondary +
 				", user_type='" + user_type + '\'' +
 				", designation='" + designation + '\'' +
 				", emp_department='" + emp_department + '\'' +
 				", membership_type='" + membership_type + '\'' +
-				", relationship_manager='" + relationship_manager + '\'' +
-				", superviser_id='" + superviser_id + '\'' +
+				", relationship_manager=" + relationship_manager +
+				", superviser_id=" + superviser_id +
 				", brokerage_id='" + brokerage_id + '\'' +
 				", brokerage_name='" + brokerage_name + '\'' +
+				", salary=" + salary +
+				", commision=" + commision +
+				", bank_id='" + bank_id + '\'' +
+				", bank_account_number=" + bank_account_number +
 				'}';
 	}
 }
