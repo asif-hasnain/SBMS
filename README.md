@@ -6,3 +6,5 @@ Stock Brokerage Management System
 • Developed a MySQL OLTP database hosted on AWS EC2, a DataWarehouse on Oracle ADW and ETL process.
 
 • Tools and Technology Used: Java, PL/SQL, JavaScript, AWS, Oracle
+
+Features, System Design, Database design and SQL code can be found in Report.pdf.
